@@ -120,9 +120,11 @@ def transform_data_to_df(spark, json_data):
             "magType": properties.get("magType"),
             "type": properties.get("type"),
             "title": properties.get("title"),
-            "longitude": coordinates[0],
-            "latitude": coordinates[1],
-            "depth": float(coordinates[2]) if coordinates[2] is not None else None
+            "geometry": {
+                "longitude": coordinates[0],
+                "latitude": coordinates[1],
+                "depth": float(coordinates[2]) if coordinates[2] is not None else None
+            }
         }
         
         flatten_data.append(flattened_record)
@@ -155,9 +157,11 @@ def transform_data_to_df(spark, json_data):
         StructField("magType", StringType(), True),
         StructField("type", StringType(), True),
         StructField("title", StringType(), True),
-        StructField("longitude", FloatType(), True),
-        StructField("latitude", FloatType(), True),
-        StructField("depth", FloatType(), True)
+        StructField("geometry", StructType([
+            StructField("longitude", FloatType(), True),
+            StructField("latitude", FloatType(), True),
+            StructField("depth", FloatType(), True)
+        ]))
     ])
 
     return spark.createDataFrame(flatten_data, schema=schema)
