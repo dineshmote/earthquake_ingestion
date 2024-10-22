@@ -1,35 +1,9 @@
 from datetime import datetime
 from google.cloud import storage    
-from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area
+from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json
 import os
-# def write_df_to_local_parquet(df, local_file_path):
-#     """
-#     Write the PySpark DataFrame to a local parquet file.
     
-#     :param df: PySpark DataFrame to be written.
-#     :param local_file_path: Path to the local file where the DataFrame will be written.
-#     """
-#     df.write.mode("overwrite").parquet(local_file_path)
-#     print(f"Data written locally to {local_file_path}")
-
-# def upload_file_to_gcs(local_file_path, bucket_name, gcs_file_path):
-#     """
-#     Upload a local file to a GCS bucket.
-    
-#     :param local_file_path: Path to the local file to upload.
-#     :param bucket_name: GCS bucket name.
-#     :param gcs_file_path: Path (including file name) in GCS where the file will be uploaded.
-#     """
-#     # Initialize the GCS client
-#     client = storage.Client()
-#     bucket = client.get_bucket(bucket_name)
-#     blob = bucket.blob(gcs_file_path)
-
-#     # Upload the file
-#     blob.upload_from_filename(local_file_path)
-#     print(f"File {local_file_path} uploaded to GCS at {gcs_file_path}.")
-    
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
 
 def main():
     """
@@ -43,8 +17,7 @@ def main():
     api_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson"
     bucket_name = "earthquake_analysis_data_bucket"
     file_name = f"pyspark/landing/{formatted_date}/earthquake_raw.json"
-    local_parquet_file = f"earthquake_area_{formatted_date}.parquet"
-    gcs_parquet_file = f"processed/earthquake_area_{formatted_date}.parquet"
+
     
     spark = initialize_spark(app_name)
     
@@ -57,7 +30,8 @@ def main():
     except Exception as e:
         print(f"Error reading data from GCS: {e}")
         return
-    
+
+    # Add area column to the DataFrame
     try:
         add_area_column_df = add_column_area(df)
         add_area_column_df.show(truncate=False)
@@ -65,14 +39,15 @@ def main():
         print(f"Error adding area column: {e}")
         return
     
-    
+    # Write the updated DataFrame to GCS as a JSON file
     try:
-        output_path = f"gs://{bucket_name}/processed/earthquake_area"
-        add_area_column_df.write.mode('overwrite').parquet(output_path)
+        output_path = f"gs://{bucket_name}/pyspark/silver/{formatted_date}/earthquake_silver.json"
+        write_df_to_gcs_as_json(add_area_column_df, bucket_name, output_path)
         print(f"Data successfully written to GCS at {output_path}")
     except Exception as e:
         print(f"Error writing data to GCS: {e}")
         return
+    
     
     
     
