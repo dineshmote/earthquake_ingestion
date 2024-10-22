@@ -65,7 +65,7 @@ def convert_timestamp_to_gmt(timestamp_ms):
         return datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S')
     return None
 
-def initialize_spark(app_name):
+def initialize_spark(app_name): 
     """
     Initialize PySpark session with Google Cloud Storage connector.
     
@@ -74,10 +74,6 @@ def initialize_spark(app_name):
     """
     return SparkSession.builder \
         .appName(app_name) \
-        .config("spark.jars.packages", "com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.7") \
-        .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
-        .config("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
-        .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", os.environ["GOOGLE_APPLICATION_CREDENTIALS"]) \
         .getOrCreate()
 
 def transform_data_to_df(spark, json_data):
