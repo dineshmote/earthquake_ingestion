@@ -73,24 +73,7 @@ def main():
     except Exception as e:
         print(f"Error writing data to GCS: {e}")
         return
-    # try:
-    #     add_area_column_df = add_column_area(df)
-        
-    #     # Step 1: Write DataFrame to local parquet file
-    #     write_df_to_local_parquet(add_area_column_df, local_parquet_file)
-        
-    #     # Step 2: Upload local parquet file to GCS
-    #     upload_file_to_gcs(local_parquet_file, bucket_name, gcs_parquet_file)
-        
-    #     # Optional: Clean up the local file after upload
-    #     if os.path.exists(local_parquet_file):
-    #         os.remove(local_parquet_file)
-    #         print(f"Local file {local_parquet_file} deleted after upload.")
     
-    # except Exception as e:
-    #     print(f"Error in processing: {e}")
-
-        
     
     
         
