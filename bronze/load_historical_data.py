@@ -4,6 +4,8 @@ import os
 import json
 import requests
 from datetime import datetime
+from pyspark.sql.types import StructField, StructType, IntegerType, StringType, DoubleType, LongType, FloatType
+
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Brainworks\GCP\gcp-data-project-433112-b6d2c0754752.json"
 
@@ -66,15 +68,93 @@ def read_data_from_gcs(spark, bucket_name, file_name):
     blob = bucket.blob(file_name)
     
     # Download the JSON data as a string
-    json_data = blob.download_as_string()
+    data = blob.download_as_string()
+    json_data = json.loads(data)
     
-    return json_data
-
-    # Convert the JSON string into an RDD and then a DataFrame
-    # rdd = spark.sparkContext.parallelize([json_data.decode("utf-8")])
-    # df = spark.read.json(rdd)
+    # Extract relevant features
+    features = json_data.get("features", [])
+    
+    flatten_data = []
+    
+    for feature in features:
+        properties = feature["properties"]
+        geometry = feature["geometry"]
+        coordinates = geometry["coordinates"]
+        
+        flattened_record = {
+            "id": properties.get("id"),
+            "place": properties.get("place"),
+            "mag": float(properties.get("mag")) ,
+            "time": properties.get("time"),
+            "updated": properties.get("updated"),
+            "tz": properties.get("tz"),
+            "url": properties.get("url"),
+            "detail": properties.get("detail"),
+            "felt": properties.get("felt"),
+            "cdi": float(properties.get("cdi")),
+            "mmi": float(properties.get("mmi")),
+            "alert": properties.get("alert"),
+            "status": properties.get("status"),
+            "tsunami": properties.get("tsunami"),
+            "sig": properties.get("sig"),
+            "net": properties.get("net"),
+            "code": properties.get("code"),
+            "ids": properties.get("ids"),
+            "sources": properties.get("sources"),
+            "types": properties.get("types"),
+            "nst": properties.get("nst"),
+            "dmin": float(properties.get("dmin")),
+            "rms": float(properties.get("rms")),
+            "gap": float(properties.get("gap")),
+            "magType": properties.get("magType"),
+            "type": properties.get("type"),
+            "title": properties.get("title"),
+            "longitude": coordinates[0],
+            "latitude": coordinates[1],
+            "depth": float(coordinates[2])
+        }
+        
+        flatten_data.append(flattened_record)
+    
+    # Define the schema
+    schema = StructType([
+        StructField("id", StringType(), True),
+        StructField("place", StringType(), True),
+        StructField("mag", FloatType(), True),
+        StructField("time", LongType(), True),
+        StructField("updated", LongType(), True),
+        StructField("tz", IntegerType(), True),
+        StructField("url", StringType(), True),
+        StructField("detail", StringType(), True),
+        StructField("felt", IntegerType(), True),
+        StructField("cdi", FloatType(), True),
+        StructField("mmi", FloatType(), True),
+        StructField("alert", StringType(), True),
+        StructField("status", StringType(), True),
+        StructField("tsunami", IntegerType(), True),
+        StructField("sig", IntegerType(), True),
+        StructField("net", StringType(), True),
+        StructField("code", StringType(), True),
+        StructField("ids", StringType(), True),
+        StructField("sources", StringType(), True),
+        StructField("types", StringType(), True),
+        StructField("nst", IntegerType(), True),
+        StructField("dmin", FloatType(), True),
+        StructField("rms", FloatType(), True),
+        StructField("gap", FloatType(), True),
+        StructField("magType", StringType(), True),
+        StructField("type", StringType(), True),
+        StructField("title", StringType(), True),
+        StructField("longitude", FloatType(), True),
+        StructField("latitude", FloatType(), True),
+        StructField("depth", FloatType(), True)
+    ])
+    
+    # Create a DataFrame from the flattened data
+    df = spark.createDataFrame(flatten_data, schema=schema)
     
     return df
+
 
 def main():
     """
@@ -83,7 +163,7 @@ def main():
     """
     # Configuration
     current_date = datetime.now()
-    formatted_date = current_date.strftime('%Y%d%m')
+    formatted_date = current_date.strftime('%Y%m%d')
     app_name = "APIDataToGCS"
     api_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson"
     bucket_name = "earthquake_analysis_data_bucket"
@@ -107,12 +187,10 @@ def main():
     
     # Read data back from GCS into PySpark DataFrame
     try:
-        # df = read_data_from_gcs(spark, bucket_name, file_name)
-        # # df.show(truncate=False)
-        # print(df.count())
+        df = read_data_from_gcs(spark, bucket_name, file_name)
+        df.show(truncate=False)
+        print(df.count())
         
-        data = read_data_from_gcs(spark, bucket_name, file_name)
-        print(data)
     except Exception as e:
         print(f"Error reading data from GCS: {e}")
         return
