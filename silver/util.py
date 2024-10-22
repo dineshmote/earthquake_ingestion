@@ -5,6 +5,7 @@ from google.cloud import storage
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, IntegerType, StringType, FloatType, LongType
 from pyspark.sql.functions import col, split
+import os
 
 def fetch_data_from_api(api_url):
     """
@@ -66,12 +67,18 @@ def convert_timestamp_to_gmt(timestamp_ms):
 
 def initialize_spark(app_name):
     """
-    Initialize PySpark session.
+    Initialize PySpark session with Google Cloud Storage connector.
     
     :param app_name: Name of the Spark application.
     :return: SparkSession object.
     """
-    return SparkSession.builder.appName(app_name).getOrCreate()
+    return SparkSession.builder \
+        .appName(app_name) \
+        .config("spark.jars.packages", "com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.7") \
+        .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
+        .config("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
+        .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", os.environ["GOOGLE_APPLICATION_CREDENTIALS"]) \
+        .getOrCreate()
 
 def transform_data_to_df(spark, json_data):
     """
@@ -169,4 +176,29 @@ def add_column_area(df):
     return add_column_area_df 
     
     
+def write_df_to_local_parquet(df, local_file_path):
+    """
+    Write the PySpark DataFrame to a local parquet file.
     
+    :param df: PySpark DataFrame to be written.
+    :param local_file_path: Path to the local file where the DataFrame will be written.
+    """
+    df.write.mode("overwrite").parquet(local_file_path)
+    print(f"Data written locally to {local_file_path}")
+
+def upload_file_to_gcs(local_file_path, bucket_name, gcs_file_path):
+    """
+    Upload a local file to a GCS bucket.
+    
+    :param local_file_path: Path to the local file to upload.
+    :param bucket_name: GCS bucket name.
+    :param gcs_file_path: Path (including file name) in GCS where the file will be uploaded.
+    """
+    # Initialize the GCS client
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(gcs_file_path)
+
+    # Upload the file
+    blob.upload_from_filename(local_file_path)
+    print(f"File {local_file_path} uploaded to GCS at {gcs_file_path}.")

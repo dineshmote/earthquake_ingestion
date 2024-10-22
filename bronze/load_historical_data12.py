@@ -1,10 +1,26 @@
+from pyspark.sql import SparkSession
+from google.cloud import storage
+import os
 import json
 import requests
 from datetime import datetime
-from google.cloud import storage    
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructField, StructType, IntegerType, StringType, FloatType, LongType
-from pyspark.sql.functions import col, split
+from pyspark.sql.types import StructField, StructType, IntegerType, StringType, DoubleType, LongType, FloatType
+
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Brainworks\GCP\gcp-data-project-433112-b6d2c0754752.json"
+
+def initialize_spark(app_name):
+    """
+    Initialize PySpark session.
+    
+    :param app_name: Name of the Spark application.
+    :return: SparkSession object.
+    """
+    spark = SparkSession.builder \
+        .appName(app_name) \
+        .getOrCreate()
+    
+    return spark
 
 def fetch_data_from_api(api_url):
     """
@@ -27,80 +43,56 @@ def write_data_to_gcs(data, bucket_name, file_name):
     :param bucket_name: Name of the GCS bucket.
     :param file_name: File name to save the data as in the GCS bucket.
     """
+    # Initialize GCS client
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(file_name)
     
+    # Convert the data to JSON string and upload it to GCS
     json_data = json.dumps(data)
     blob.upload_from_string(json_data, content_type='application/json')
     print(f"Data written to GCS bucket {bucket_name} as {file_name}.")
 
-def read_data_from_gcs(bucket_name, file_name):
+def read_data_from_gcs(spark, bucket_name, file_name):
     """
-    Read JSON data from GCS and return it as a Python dictionary.
+    Read JSON data from GCS into a PySpark DataFrame using GCS Client Libraries.
     
+    :param spark: SparkSession object.
     :param bucket_name: GCS bucket name.
     :param file_name: Name of the file to read from the GCS bucket.
-    :return: Parsed JSON data from GCS file.
+    :return: DataFrame containing the data read from GCS.
     """
+    # Initialize GCS client
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(file_name)
     
+    # Download the JSON data as a string
     data = blob.download_as_string()
-    return json.loads(data)
-
-def convert_timestamp_to_gmt(timestamp_ms):
-    """
-    Convert Unix timestamp in milliseconds to GMT.
+    json_data = json.loads(data)
     
-    :param timestamp_ms: Unix timestamp in milliseconds.
-    :return: Formatted GMT string.
-    """
-    if timestamp_ms is not None:
-        # Convert milliseconds to seconds
-        timestamp_s = timestamp_ms / 1000
-        # Convert to datetime in UTC and format to string
-        return datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S')
-    return None
-
-def initialize_spark(app_name):
-    """
-    Initialize PySpark session.
-    
-    :param app_name: Name of the Spark application.
-    :return: SparkSession object.
-    """
-    return SparkSession.builder.appName(app_name).getOrCreate()
-
-def transform_data_to_df(spark, json_data):
-    """
-    Transform JSON data into a PySpark DataFrame with a predefined schema.
-    
-    :param spark: SparkSession object.
-    :param json_data: Parsed JSON data to be transformed.
-    :return: DataFrame with transformed data.
-    """
+    # Extract relevant features
     features = json_data.get("features", [])
+    
     flatten_data = []
-
+    
     for feature in features:
         properties = feature["properties"]
         geometry = feature["geometry"]
         coordinates = geometry["coordinates"]
-
+        
         flattened_record = {
-            # "id": properties.get("id"),
+            "id": properties.get("id"),
             "place": properties.get("place"),
-            "mag": float(properties.get("mag")) if properties.get("mag") is not None else None,
-            "time": convert_timestamp_to_gmt(properties.get("time")),
-            "updated": convert_timestamp_to_gmt(properties.get("updated")),
+            "mag": float(properties.get("mag")) ,
+            "time": properties.get("time"),
+            "updated": properties.get("updated"),
             "tz": properties.get("tz"),
             "url": properties.get("url"),
             "detail": properties.get("detail"),
             "felt": properties.get("felt"),
-            "cdi": float(properties.get("cdi")) if properties.get("cdi") is not None else None,
-            "mmi": float(properties.get("mmi")) if properties.get("mmi") is not None else None,
+            "cdi": float(properties.get("cdi")),
+            "mmi": float(properties.get("mmi")),
             "alert": properties.get("alert"),
             "status": properties.get("status"),
             "tsunami": properties.get("tsunami"),
@@ -111,25 +103,26 @@ def transform_data_to_df(spark, json_data):
             "sources": properties.get("sources"),
             "types": properties.get("types"),
             "nst": properties.get("nst"),
-            "dmin": float(properties.get("dmin")) if properties.get("dmin") is not None else None,
-            "rms": float(properties.get("rms")) if properties.get("rms") is not None else None,
-            "gap": float(properties.get("gap")) if properties.get("gap") is not None else None,
+            "dmin": float(properties.get("dmin")),
+            "rms": float(properties.get("rms")),
+            "gap": float(properties.get("gap")),
             "magType": properties.get("magType"),
             "type": properties.get("type"),
             "title": properties.get("title"),
             "longitude": coordinates[0],
             "latitude": coordinates[1],
-            "depth": float(coordinates[2]) if coordinates[2] is not None else None
+            "depth": float(coordinates[2])
         }
         
         flatten_data.append(flattened_record)
     
+    # Define the schema
     schema = StructType([
-        # StructField("id", StringType(), True),
+        StructField("id", StringType(), True),
         StructField("place", StringType(), True),
         StructField("mag", FloatType(), True),
-        StructField("time", StringType(), True),
-        StructField("updated", StringType(), True),
+        StructField("time", LongType(), True),
+        StructField("updated", LongType(), True),
         StructField("tz", IntegerType(), True),
         StructField("url", StringType(), True),
         StructField("detail", StringType(), True),
@@ -156,17 +149,51 @@ def transform_data_to_df(spark, json_data):
         StructField("latitude", FloatType(), True),
         StructField("depth", FloatType(), True)
     ])
+    
+    # Create a DataFrame from the flattened data
+    df = spark.createDataFrame(flatten_data, schema=schema)
+    
+    return df
 
-    return spark.createDataFrame(flatten_data, schema=schema)
 
-def add_column_area(df):
+def main():
     """
-    Add a column to the earthquakes dataframe with the area of the earthquake
-    based on its magnitude.
-    """  
-    add_column_area_df =  df.withColumn("area", split(col("place"),"of").getItem(1))
+    Main function to handle the flow of reading API data, saving it to GCS, 
+    and reading it back into PySpark.
+    """
+    # Configuration
+    current_date = datetime.now()
+    formatted_date = current_date.strftime('%Y%m%d')
+    app_name = "APIDataToGCS"
+    api_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson"
+    bucket_name = "earthquake_analysis_data_bucket"
+    file_name = f"pyspark/landing/{formatted_date}/earthquake_raw.json"
     
-    return add_column_area_df 
+    spark = initialize_spark(app_name)
     
+    # Fetch data from API
+    try:
+        data = fetch_data_from_api(api_url)
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        return
     
+    # Write data to GCS using the client library
+    try:
+        write_data_to_gcs(data, bucket_name, file_name)
+    except Exception as e:
+        print(f"Error writing data to GCS: {e}")
+        return
     
+    # Read data back from GCS into PySpark DataFrame
+    try:
+        df = read_data_from_gcs(spark, bucket_name, file_name)
+        df.show(truncate=False)
+        print(df.count())
+        
+    except Exception as e:
+        print(f"Error reading data from GCS: {e}")
+        return
+
+if __name__ == "__main__":
+    main()
