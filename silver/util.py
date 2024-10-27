@@ -7,6 +7,19 @@ from pyspark.sql.types import StructField, StructType, IntegerType, StringType, 
 from pyspark.sql.functions import col, split, current_timestamp
 import os
 
+
+def initialize_spark(app_name): 
+    """
+    Initialize PySpark session with Google Cloud Storage connector.
+    
+    :param app_name: Name of the Spark application.
+    :return: SparkSession object.
+    """
+    return SparkSession.builder \
+        .appName(app_name) \
+        .getOrCreate()
+        
+        
 def fetch_data_from_api(api_url):
     """
     Fetch data from a given API endpoint.
@@ -65,16 +78,7 @@ def convert_timestamp_to_gmt(timestamp_ms):
         return datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S')
     return None
 
-def initialize_spark(app_name): 
-    """
-    Initialize PySpark session with Google Cloud Storage connector.
-    
-    :param app_name: Name of the Spark application.
-    :return: SparkSession object.
-    """
-    return SparkSession.builder \
-        .appName(app_name) \
-        .getOrCreate()
+
 
 def transform_data_to_df(spark, json_data):
     """
@@ -192,6 +196,20 @@ def write_df_to_gcs_as_json(df, bucket_name, output_path):
         print(f"Error writing data to GCS: {e}")
         return
 
+def write_df_to_gcs_as_parquet(dataframe, bucket_name, destination_path):
+    """
+    Write the PySpark DataFrame directly to a GCS bucket as a Parquet file.
+
+    :param dataframe: PySpark DataFrame to be written.
+    :param bucket_name: GCS bucket name.
+    :param destination_path: Path in GCS where the Parquet file will be saved.
+    """
+    # Write the DataFrame as a Parquet file directly to GCS
+    dataframe.write.mode("overwrite").parquet(destination_path)
+
+
+    
+    
 def load_df_to_bigquery(df, project_id, dataset_id, table_id, gcs_temp_location):
     """
     Load a DataFrame to BigQuery.
@@ -205,7 +223,6 @@ def load_df_to_bigquery(df, project_id, dataset_id, table_id, gcs_temp_location)
     """
     client = bigquery.Client()
     
-    # Define the table reference
     table_ref = f"{project_id}.{dataset_id}.{table_id}"
 
     # Load DataFrame to BigQuery
@@ -214,7 +231,37 @@ def load_df_to_bigquery(df, project_id, dataset_id, table_id, gcs_temp_location)
             .format("bigquery") \
             .option("table", table_ref) \
             .option("temporaryGcsBucket", gcs_temp_location) \
+            .mode("overwrite") \
+            .option("writeDisposition", "WRITE_TRUNCATE") \
             .save()
         print("Data successfully loaded into BigQuery.")
     except Exception as e:
         print(f"Failed to load data into BigQuery: {e}")
+        
+def daily_load_df_to_bigquery(df, project_id, dataset_id, table_id, gcs_temp_location):
+    """
+    Load a DataFrame to BigQuery by appending to the existing table.
+
+    Args:
+        df: The DataFrame to load.
+        project_id: GCP project ID.
+        dataset_id: BigQuery dataset ID.
+        table_id: BigQuery table ID.
+        gcs_temp_location: GCS bucket for temporary files.
+    """
+    client = bigquery.Client()
+    
+    table_ref = f"{project_id}.{dataset_id}.{table_id}"
+
+    # Load DataFrame to BigQuery with append mode
+    try:
+        df.write \
+            .format("bigquery") \
+            .option("table", table_ref) \
+            .option("temporaryGcsBucket", gcs_temp_location) \
+            .mode("append") \
+            .option("writeDisposition", "WRITE_APPEND") \
+            .save()
+        print("Data successfully appended to BigQuery.")
+    except Exception as e:
+        print(f"Failed to append data into BigQuery: {e}")

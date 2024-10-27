@@ -1,10 +1,10 @@
 from datetime import datetime
 from google.cloud import storage  
 from pyspark.sql.functions import current_timestamp  
-from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json, load_df_to_bigquery
+from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json, load_df_to_bigquery, write_df_to_gcs_as_parquet, daily_load_df_to_bigquery
 import os
     
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
 
 def main():
     """
@@ -15,9 +15,9 @@ def main():
     current_date = datetime.now()
     formatted_date = current_date.strftime('%Y%m%d')
     app_name = "APIDataToGCS"
-    api_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson"
+    api_url ="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
     bucket_name = "earthquake_analysis_data_bucket"
-    file_name = f"pyspark/landing/{formatted_date}/earthquake_raw.json"
+    file_name = f"pyspark/daily_landing/{formatted_date}/earthquake_raw.json"
 
     spark = initialize_spark(app_name)
     
@@ -39,16 +39,26 @@ def main():
         print(f"Error adding area column: {e}")
         return
     
+    # # Write the updated DataFrame to GCS as a JSON file
+    # try:
+    #     output_path = f"gs://{bucket_name}/pyspark/silver/{formatted_date}/earthquake_silver.json"
+    #     write_df_to_gcs_as_json(add_area_column_df, bucket_name, output_path)
+    #     print(f"Data successfully written to GCS at {output_path}")
+    # except Exception as e:
+    #     print(f"Error writing data to GCS: {e}")
+    #     return 
+    
     # Write the updated DataFrame to GCS as a JSON file
-    try:
-        output_path = f"gs://{bucket_name}/pyspark/silver/{formatted_date}/earthquake_silver.json"
-        write_df_to_gcs_as_json(add_area_column_df, bucket_name, output_path)
-        print(f"Data successfully written to GCS at {output_path}")
+    try: 
+        bucket_name = 'earthquake_analysis3'
+        destination_path = f"pyspark/silver_daily_load/{formatted_date}/earthquake_silver.parquet"
+        write_df_to_gcs_as_parquet(add_area_column_df, bucket_name, destination_path)
+        print(f"Data successfully written to GCS at {destination_path}")
     except Exception as e:
         print(f"Error writing data to GCS: {e}")
-        return 
-    
-    
+        return
+        
+  
      
     # Add insert_dt column (current timestamp)
     try:
@@ -61,19 +71,17 @@ def main():
     # Load data into BigQuery
     project_id = "gcp-data-project-433112"  
     dataset_id = "earthquake_ingestion"
-    table_id = "earthquake_data"  
+    table_id = "earthquake_daily_data"  
     gcs_temp_location = "earthquake_analysis_data_bucket"
     
-     # Write the DataFrame to BigQuery 
+    # Write the DataFrame to BigQuery 
     try:
-        load_df_to_bigquery(final_df, project_id, dataset_id, table_id, gcs_temp_location)
+        daily_load_df_to_bigquery(final_df, project_id, dataset_id, table_id, gcs_temp_location)
     except Exception as e:
         print(f"Error  writing data to BigQuery: {e}")
         return
     
     
-    
-        
 
 if __name__ == "__main__":
     main()
