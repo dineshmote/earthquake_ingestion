@@ -9,6 +9,7 @@ import os
 import tempfile
 
 
+
 def initialize_spark(app_name): 
     """
     Initialize PySpark session with Google Cloud Storage connector.
@@ -49,7 +50,6 @@ def write_data_to_gcs(data, bucket_name, file_name):
     json_data = json.dumps(data)
     blob.upload_from_string(json_data, content_type='application/json')
     print(f"Data written to GCS bucket {bucket_name} as {file_name}.")
-    
 
 def read_data_from_gcs(bucket_name, file_name):
     """
@@ -65,7 +65,6 @@ def read_data_from_gcs(bucket_name, file_name):
     
     data = blob.download_as_string()
     return json.loads(data)
-
 
 def convert_timestamp_to_gmt(timestamp_ms):
     """
@@ -199,7 +198,7 @@ def write_df_to_gcs_as_json(df, bucket_name, output_path):
         print(f"Error writing data to GCS: {e}")
         return
 
-def write_df_to_gcs_as_parquet(dataframe, bucket_name, destination_path):
+def upload_dataframe_to_gcs_as_parquet(dataframe, bucket_name, destination_path):
     """
     Write the PySpark DataFrame directly to a GCS bucket as a Parquet file.
 
@@ -207,9 +206,10 @@ def write_df_to_gcs_as_parquet(dataframe, bucket_name, destination_path):
     :param bucket_name: GCS bucket name.
     :param destination_path: Path in GCS where the Parquet file will be saved.
     """
+
     # Write the DataFrame as a Parquet file directly to GCS
     dataframe.write.mode("overwrite").parquet(destination_path)
-    
+
 def read_parquet_from_gcs(spark, bucket_name, file_path):
     """
     Read a Parquet file from GCS using the client library and return it as a PySpark DataFrame.
@@ -241,12 +241,9 @@ def read_parquet_from_gcs_bucket(spark, bucket_name, file_path):
     :param file_path: Path to the Parquet file in the GCS bucket.
     :return: DataFrame read from the Parquet file.
     """
-    gcs_uri = f"gs://{bucket_name}/{file_path}"
-    return spark.read.parquet(gcs_uri)
-
-
+    return spark.read.parquet(file_path)
     
-    
+# Historical data load in Bigquery table     
 def load_df_to_bigquery(df, project_id, dataset_id, table_id, gcs_temp_location):
     """
     Load a DataFrame to BigQuery.
@@ -274,9 +271,9 @@ def load_df_to_bigquery(df, project_id, dataset_id, table_id, gcs_temp_location)
         print("Data successfully loaded into BigQuery.")
     except Exception as e:
         print(f"Failed to load data into BigQuery: {e}")
+
         
-        
-        
+
 def daily_load_df_to_bigquery(df, project_id, dataset_id, table_id, gcs_temp_location):
     """
     Load a DataFrame to BigQuery by appending to the existing table.

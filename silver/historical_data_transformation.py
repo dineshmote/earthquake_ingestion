@@ -1,7 +1,7 @@
 from datetime import datetime
 from google.cloud import storage  
 from pyspark.sql.functions import current_timestamp  
-from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json, load_df_to_bigquery
+from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json, read_parquet_from_gcs_bucket, upload_dataframe_to_gcs_as_parquet, load_df_to_bigquery
 import os
     
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
@@ -40,24 +40,32 @@ def main():
         return
     
     # Write the updated DataFrame to GCS as a JSON file
-    try:
-        output_path = f"gs://{bucket_name}/pyspark/silver/{formatted_date}/earthquake_silver.json"
-        write_df_to_gcs_as_json(add_area_column_df, bucket_name, output_path)
-        print(f"Data successfully written to GCS at {output_path}")
+    try:     
+        destination_path = f"gs://{bucket_name}/pyspark/silver/{formatted_date}/earthquake_silver.json"
+        upload_dataframe_to_gcs_as_parquet(add_area_column_df, bucket_name, destination_path)
+        print(f"Data successfully written to GCS at {destination_path}")
     except Exception as e:
         print(f"Error writing data to GCS: {e}")
-        return 
-    
-    
-     
-    # Add insert_dt column (current timestamp)
+        return
+
+
+    # Read data from GCS Parquet file into PySpark DataFrame
     try:
-        final_df = add_area_column_df.withColumn("insert_dt", current_timestamp())
+        parquet_df = read_parquet_from_gcs_bucket(spark, bucket_name, destination_path)
+        parquet_df.show(truncate=False)
+    except Exception as e:
+        print(f"Error reading Parquet file from GCS: {e}")
+        return
+
+    
+    # Add insert_dt column (current timestamp) for BigQuery load
+    try:
+        final_df = parquet_df.withColumn("insert_dt", current_timestamp())
         final_df.show(truncate=False)
     except Exception as e:
         print(f"Error adding insert_dt column: {e}")
         return
-
+    
     # Load data into BigQuery
     project_id = "gcp-data-project-433112"  
     dataset_id = "earthquake_ingestion"
@@ -74,6 +82,5 @@ def main():
     
     
         
-
 if __name__ == "__main__":
     main()

@@ -4,7 +4,7 @@ from pyspark.sql.functions import current_timestamp
 from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json, load_df_to_bigquery, upload_dataframe_to_gcs_as_parquet, read_parquet_from_gcs, read_parquet_from_gcs_bucket, daily_load_df_to_bigquery
 import os
     
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
 
 def main():
     """
@@ -51,18 +51,8 @@ def main():
         print(f"Error writing data to GCS: {e}")
         return
     
-        
-     
-    # # Read data from GCS Parquet file into PySpark DataFrame using client library
-    # try:
-    #     parquet_df = read_parquet_from_gcs(spark, bucket_name, destination_path)
-    #     parquet_df.show(truncate=False)
-    # except Exception as e:
-    #     print(f"Error reading Parquet file from GCS: {e}")
-    #         return
 
-
-    # Read data from GCS Parquet file into PySpark DataFrame
+     # Read data from GCS Parquet file into PySpark DataFrame
     try:
         parquet_df = read_parquet_from_gcs_bucket(spark, bucket_name, destination_path)
         parquet_df.show(truncate=False)
@@ -93,7 +83,22 @@ def main():
     except Exception as e:
         print(f"Error  writing data to BigQuery: {e}")
         return
-       
+    
+    # # Load data into BigQuery
+    # project_id = "gcp-data-project-433112"  
+    # dataset_id = "earthquake_ingestion"
+    # table_id = "earthquake_data"  
+    # gcs_temp_location = "earthquake_analysis_data_bucket"
+    
+    # # Write the DataFrame to BigQuery 
+    # try:
+    #     daily_load_df_to_bigquery(final_df, project_id, dataset_id, table_id, gcs_temp_location)
+    # except Exception as e:
+    #     print(f"Error  writing data to BigQuery: {e}")
+    #     return
+    
+    
+    
         
 
 if __name__ == "__main__":
