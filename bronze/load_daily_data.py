@@ -2,7 +2,7 @@ from datetime import datetime
 from util import fetch_data_from_api, write_data_to_gcs, read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area
 import os
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-440907-eb61e9727efa.json"
 
 def main():
     """
@@ -14,7 +14,7 @@ def main():
     formatted_date = current_date.strftime('%Y%m%d')
     app_name = "APIDataToGCS"
     api_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
-    bucket_name = "earthquake_analysis_data_bucket"
+    bucket_name = "earthquake_analysis_data1"
     file_name = f"pyspark/daily_landing/{formatted_date}/earthquake_raw.json"
     
     spark = initialize_spark(app_name)

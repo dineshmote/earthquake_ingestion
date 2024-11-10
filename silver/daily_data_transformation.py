@@ -4,7 +4,7 @@ from pyspark.sql.functions import current_timestamp
 from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json, load_df_to_bigquery, upload_dataframe_to_gcs_as_parquet, read_parquet_from_gcs, read_parquet_from_gcs_bucket, daily_load_df_to_bigquery
 import os
     
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-433112-aecffc0dc374.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-440907-eb61e9727efa.json"
 
 def main():
     """
@@ -16,7 +16,7 @@ def main():
     formatted_date = current_date.strftime('%Y%m%d')
     app_name = "APIDataToGCS"
     api_url ="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
-    bucket_name = "earthquake_analysis_data_bucket"
+    bucket_name = "earthquake_analysis_data1"
     file_name = f"pyspark/daily_landing/{formatted_date}/earthquake_raw.json"
 
     spark = initialize_spark(app_name)
@@ -71,23 +71,10 @@ def main():
 
    
 
-    # Load data into BigQuery
-    project_id = "gcp-data-project-433112"  
-    dataset_id = "earthquake_ingestion"
-    table_id = "earthquake_daily_data"  
-    gcs_temp_location = "earthquake_analysis_data_bucket"
-    
-    # Write the DataFrame to BigQuery 
-    try:
-        daily_load_df_to_bigquery(final_df, project_id, dataset_id, table_id, gcs_temp_location)
-    except Exception as e:
-        print(f"Error  writing data to BigQuery: {e}")
-        return
-    
     # # Load data into BigQuery
     # project_id = "gcp-data-project-433112"  
     # dataset_id = "earthquake_ingestion"
-    # table_id = "earthquake_data"  
+    # table_id = "earthquake_daily_data"  
     # gcs_temp_location = "earthquake_analysis_data_bucket"
     
     # # Write the DataFrame to BigQuery 
@@ -96,6 +83,19 @@ def main():
     # except Exception as e:
     #     print(f"Error  writing data to BigQuery: {e}")
     #     return
+    
+    # Load data into BigQuery
+    project_id = "gcp-data-project-433112"  
+    dataset_id = "earthquake_ingestion"
+    table_id = "earthquake_data"  
+    gcs_temp_location = "earthquake_analysis_data_bucket"
+    
+    # Write the DataFrame to BigQuery 
+    try:
+        daily_load_df_to_bigquery(final_df, project_id, dataset_id, table_id, gcs_temp_location)
+    except Exception as e:
+        print(f"Error  writing data to BigQuery: {e}")
+        return
     
     
     
