@@ -33,22 +33,6 @@ def main():
         print(f"Error writing data to GCS: {e}")
         return
     
-    # # Read data back from GCS into PySpark DataFrame
-    # try:
-    #     json_data = read_data_from_gcs(bucket_name, file_name)
-    #     df = transform_data_to_df(spark, json_data)
-    #     df.show(truncate=False)
-    #     print(f"Total records: {df.count()}")  
-    # except Exception as e:
-    #     print(f"Error reading data from GCS: {e}")
-    #     return
-    
-    # try:
-    #     add_area_column_df = add_column_area(df)
-    #     add_area_column_df.show(truncate=False)
-    # except Exception as e:
-    #     print(f"Error adding area column: {e}")
-    #     return
         
 
 if __name__ == "__main__":

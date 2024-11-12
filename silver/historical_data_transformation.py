@@ -4,7 +4,7 @@ from pyspark.sql.functions import current_timestamp
 from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json, read_parquet_from_gcs_bucket, upload_dataframe_to_gcs_as_parquet, load_df_to_bigquery
 import os
     
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-440907-eb61e9727efa.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-440907-eb61e9727efa.json"
 
 def main():
     """
@@ -39,9 +39,9 @@ def main():
         print(f"Error adding area column: {e}")
         return
     
-    # Write the updated DataFrame to GCS as a JSON file
+    # Write the updated DataFrame to GCS as a Parquet file
     try:     
-        destination_path = f"gs://{bucket_name}/pyspark/silver/{formatted_date}/earthquake_silver.json"
+        destination_path = f"gs://{bucket_name}/pyspark/silver/{formatted_date}/earthquake_silver"
         upload_dataframe_to_gcs_as_parquet(add_area_column_df, bucket_name, destination_path)
         print(f"Data successfully written to GCS at {destination_path}")
     except Exception as e:
@@ -67,12 +67,12 @@ def main():
         return
     
     # Load data into BigQuery
-    project_id = "gcp-data-project-433112"  
+    project_id = "gcp-data-project-440907"  
     dataset_id = "earthquake_ingestion"
     table_id = "earthquake_data"  
-    gcs_temp_location = "earthquake_analysis_data_bucket"
+    gcs_temp_location = "earthquake_analysis_data1"
     
-     # Write the DataFrame to BigQuery 
+    # Write the DataFrame to BigQuery 
     try:
         load_df_to_bigquery(final_df, project_id, dataset_id, table_id, gcs_temp_location)
     except Exception as e:

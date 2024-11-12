@@ -4,7 +4,7 @@ from pyspark.sql.functions import current_timestamp
 from util import read_data_from_gcs, initialize_spark, transform_data_to_df, add_column_area, write_df_to_gcs_as_json, load_df_to_bigquery, upload_dataframe_to_gcs_as_parquet, read_parquet_from_gcs, read_parquet_from_gcs_bucket, daily_load_df_to_bigquery
 import os
     
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-440907-eb61e9727efa.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Dinesh Mote\Downloads\gcp-data-project-440907-eb61e9727efa.json"
 
 def main():
     """
@@ -85,10 +85,10 @@ def main():
     #     return
     
     # Load data into BigQuery
-    project_id = "gcp-data-project-433112"  
+    project_id = "gcp-data-project-440907" 
     dataset_id = "earthquake_ingestion"
     table_id = "earthquake_data"  
-    gcs_temp_location = "earthquake_analysis_data_bucket"
+    gcs_temp_location = "earthquake_analysis_data1"
     
     # Write the DataFrame to BigQuery 
     try:
