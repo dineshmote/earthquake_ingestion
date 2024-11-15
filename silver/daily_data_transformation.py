@@ -52,7 +52,7 @@ def main():
         return
     
 
-     # Read data from GCS Parquet file into PySpark DataFrame
+    # Read data from GCS Parquet file into PySpark DataFrame
     try:
         parquet_df = read_parquet_from_gcs_bucket(spark, bucket_name, destination_path)
         parquet_df.show(truncate=False)

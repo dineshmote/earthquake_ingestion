@@ -42,7 +42,7 @@ def main():
     # Write the updated DataFrame to GCS as a Parquet file
     try:     
         destination_path = f"gs://{bucket_name}/pyspark/silver/{formatted_date}/earthquake_silver"
-        upload_dataframe_to_gcs_as_parquet(add_area_column_df, bucket_name, destination_path)
+        upload_dataframe_to_gcs_as_parquet(add_area_column_df, destination_path)
         print(f"Data successfully written to GCS at {destination_path}")
     except Exception as e:
         print(f"Error writing data to GCS: {e}")
@@ -51,7 +51,7 @@ def main():
 
     # Read data from GCS Parquet file into PySpark DataFrame
     try:
-        parquet_df = read_parquet_from_gcs_bucket(spark, bucket_name, destination_path)
+        parquet_df = read_parquet_from_gcs_bucket(spark, destination_path)
         parquet_df.show(truncate=False)
     except Exception as e:
         print(f"Error reading Parquet file from GCS: {e}")

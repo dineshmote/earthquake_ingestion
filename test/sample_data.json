@@ -1,0 +1,413 @@
+{
+    "type": "FeatureCollection",
+    "metadata": {
+        "generated": 1731663311000,
+        "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+        "title": "USGS All Earthquakes, Past Day",
+        "status": 200,
+        "api": "1.14.1",
+        "count": 204
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 1.78,
+                "place": "8 km SSE of Volcano, Hawaii",
+                "time": 1731662617720,
+                "updated": 1731662788040,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv74531372",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/hv74531372.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "automatic",
+                "tsunami": 0,
+                "sig": 49,
+                "net": "hv",
+                "code": "74531372",
+                "ids": ",hv74531372,",
+                "sources": ",hv,",
+                "types": ",origin,phase-data,",
+                "nst": 23,
+                "dmin": 0.006658,
+                "rms": 0.239999995,
+                "gap": 109,
+                "magType": "ml",
+                "type": "earthquake",
+                "title": "M 1.8 - 8 km SSE of Volcano, Hawaii"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -155.20849609375,
+                    19.3729991912842,
+                    1.91999995708466
+                ]
+            },
+            "id": "hv74531372"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 1.85,
+                "place": "15 km W of Imperial, CA",
+                "time": 1731662167180,
+                "updated": 1731662397766,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci40793487",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci40793487.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "automatic",
+                "tsunami": 0,
+                "sig": 53,
+                "net": "ci",
+                "code": "40793487",
+                "ids": ",ci40793487,",
+                "sources": ",ci,",
+                "types": ",nearby-cities,origin,phase-data,scitech-link,",
+                "nst": 41,
+                "dmin": 0.02472,
+                "rms": 0.24,
+                "gap": 54,
+                "magType": "ml",
+                "type": "earthquake",
+                "title": "M 1.9 - 15 km W of Imperial, CA"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -115.7241667,
+                    32.826,
+                    7.71
+                ]
+            },
+            "id": "ci40793487"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 0.96,
+                "place": "13 km ESE of Anza, CA",
+                "time": 1731661063060,
+                "updated": 1731661364500,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci40793479",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci40793479.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "automatic",
+                "tsunami": 0,
+                "sig": 14,
+                "net": "ci",
+                "code": "40793479",
+                "ids": ",ci40793479,",
+                "sources": ",ci,",
+                "types": ",nearby-cities,origin,phase-data,scitech-link,",
+                "nst": 33,
+                "dmin": 0.03203,
+                "rms": 0.14,
+                "gap": 107,
+                "magType": "ml",
+                "type": "earthquake",
+                "title": "M 1.0 - 13 km ESE of Anza, CA"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -116.541,
+                    33.5265,
+                    14.5
+                ]
+            },
+            "id": "ci40793479"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 1.86,
+                "place": "7 km SSW of Holtville, CA",
+                "time": 1731660172240,
+                "updated": 1731660410680,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci40793471",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci40793471.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "automatic",
+                "tsunami": 0,
+                "sig": 53,
+                "net": "ci",
+                "code": "40793471",
+                "ids": ",ci40793471,",
+                "sources": ",ci,",
+                "types": ",nearby-cities,origin,phase-data,scitech-link,",
+                "nst": 21,
+                "dmin": 0.05281,
+                "rms": 0.25,
+                "gap": 70,
+                "magType": "ml",
+                "type": "earthquake",
+                "title": "M 1.9 - 7 km SSW of Holtville, CA"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -115.4225,
+                    32.7565,
+                    9.73
+                ]
+            },
+            "id": "ci40793471"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 5.4,
+                "place": "129 km SE of Neiafu, Tonga",
+                "time": 1731660107294,
+                "updated": 1731662468950,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000nry3",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us7000nry3.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": 3.351,
+                "alert": "green",
+                "status": "reviewed",
+                "tsunami": 0,
+                "sig": 449,
+                "net": "us",
+                "code": "7000nry3",
+                "ids": ",us7000nry3,",
+                "sources": ",us,",
+                "types": ",losspager,origin,phase-data,shakemap,",
+                "nst": 43,
+                "dmin": 2.892,
+                "rms": 1.36,
+                "gap": 86,
+                "magType": "mb",
+                "type": "earthquake",
+                "title": "M 5.4 - 129 km SE of Neiafu, Tonga"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -172.9768,
+                    -19.3237,
+                    10
+                ]
+            },
+            "id": "us7000nry3"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 1.02,
+                "place": "7 km WNW of Cobb, CA",
+                "time": 1731659933890,
+                "updated": 1731661767593,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75086686",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75086686.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "automatic",
+                "tsunami": 0,
+                "sig": 16,
+                "net": "nc",
+                "code": "75086686",
+                "ids": ",nc75086686,",
+                "sources": ",nc,",
+                "types": ",nearby-cities,origin,phase-data,scitech-link,",
+                "nst": 17,
+                "dmin": 0.007444,
+                "rms": 0.03,
+                "gap": 65,
+                "magType": "md",
+                "type": "earthquake",
+                "title": "M 1.0 - 7 km WNW of Cobb, CA"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.799499511719,
+                    38.8363342285156,
+                    2.20000004768372
+                ]
+            },
+            "id": "nc75086686"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 1.90999997,
+                "place": "1 km SSW of Pāhala, Hawaii",
+                "time": 1731659226950,
+                "updated": 1731659326030,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv74531317",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/hv74531317.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "automatic",
+                "tsunami": 0,
+                "sig": 56,
+                "net": "hv",
+                "code": "74531317",
+                "ids": ",hv74531317,",
+                "sources": ",hv,",
+                "types": ",origin,phase-data,",
+                "nst": 28,
+                "dmin": 0.03937,
+                "rms": 0.109999999,
+                "gap": 145,
+                "magType": "md",
+                "type": "earthquake",
+                "title": "M 1.9 - 1 km SSW of Pāhala, Hawaii"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -155.482666015625,
+                    19.1898326873779,
+                    35.0800018310547
+                ]
+            },
+            "id": "hv74531317"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 1.14,
+                "place": "16 km SSW of Olancha, CA",
+                "time": 1731658104140,
+                "updated": 1731658318726,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci40793463",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci40793463.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "automatic",
+                "tsunami": 0,
+                "sig": 20,
+                "net": "ci",
+                "code": "40793463",
+                "ids": ",ci40793463,",
+                "sources": ",ci,",
+                "types": ",nearby-cities,origin,phase-data,scitech-link,",
+                "nst": 22,
+                "dmin": 0.177,
+                "rms": 0.19,
+                "gap": 60,
+                "magType": "ml",
+                "type": "earthquake",
+                "title": "M 1.1 - 16 km SSW of Olancha, CA"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -118.0693333,
+                    36.1521667,
+                    3.23
+                ]
+            },
+            "id": "ci40793463"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 4.2,
+                "place": "17 km W of San Nicola Arcella, Italy",
+                "time": 1731657948389,
+                "updated": 1731659298040,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000nry0",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us7000nry0.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "reviewed",
+                "tsunami": 0,
+                "sig": 271,
+                "net": "us",
+                "code": "7000nry0",
+                "ids": ",us7000nry0,",
+                "sources": ",us,",
+                "types": ",origin,phase-data,",
+                "nst": 49,
+                "dmin": 0.25,
+                "rms": 0.73,
+                "gap": 69,
+                "magType": "mb",
+                "type": "earthquake",
+                "title": "M 4.2 - 17 km W of San Nicola Arcella, Italy"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    15.5865,
+                    39.8158,
+                    266.221
+                ]
+            },
+            "id": "us7000nry0"
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "mag": 2.34,
+                "place": "7 km SW of Holtville, CA",
+                "time": 1731657505880,
+                "updated": 1731657718456,
+                "tz": null,
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci40793455",
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci40793455.geojson",
+                "felt": null,
+                "cdi": null,
+                "mmi": null,
+                "alert": null,
+                "status": "automatic",
+                "tsunami": 0,
+                "sig": 84,
+                "net": "ci",
+                "code": "40793455",
+                "ids": ",ci40793455,",
+                "sources": ",ci,",
+                "types": ",nearby-cities,origin,phase-data,scitech-link,",
+                "nst": 31,
+                "dmin": 0.04751,
+                "rms": 0.26,
+                "gap": 45,
+                "magType": "ml",
+                "type": "earthquake",
+                "title": "M 2.3 - 7 km SW of Holtville, CA"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -115.4306667,
+                    32.7596667,
+                    9.94
+                ]
+            },
+            "id": "ci40793455"
+        }
+    ]
+}
